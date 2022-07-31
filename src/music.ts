@@ -1,3 +1,4 @@
+import { bps } from './ui';
 import { bufferReaderNode } from './BufferReaderNode';
 import { dstArray0, dstArray1, render } from './render';
 import { sampleRate } from './audio';
@@ -13,6 +14,7 @@ export function togglePlay(): void {
   isPlaying = !isPlaying;
 }
 
+let fourBar = 0;
 let bufferWriteBlocks = 0;
 
 export function updateMusic(): void {
@@ -41,13 +43,12 @@ export function updateMusic(): void {
   }
 
   // -- render -------------------------------------------------------------------------------------
-  const time = BLOCK_SIZE * bufferWriteBlocks / sampleRate;
-
-  render( time );
+  render( fourBar );
 
   bufferReaderNode.write( 0, bufferWriteBlocks, 0, dstArray0.subarray( 0, FRAMES_PER_RENDER ) );
   bufferReaderNode.write( 1, bufferWriteBlocks, 0, dstArray1.subarray( 0, FRAMES_PER_RENDER ) );
 
-  // -- update write blocks ------------------------------------------------------------------------
+  // -- update write blocks and position -----------------------------------------------------------
+  fourBar = ( fourBar + BLOCKS_PER_RENDER * BLOCK_SIZE / sampleRate * bps ) % 16.0;
   bufferWriteBlocks += BLOCKS_PER_RENDER;
 }

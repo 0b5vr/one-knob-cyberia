@@ -8,16 +8,15 @@ precision highp float;
 
 #define PI 3.141592654
 #define TAU 6.283185307
-#define BEAT (60.0/190.0)
 
 #define saturate(i) clamp(i, 0.,1.)
 #define clip(i) clamp(i,-1.,1.)
 #define linearstep(a,b,x) saturate(((x)-(a))/((b)-(a)))
 
+uniform float bps;
 uniform float ds;
 uniform float knob;
-uniform vec4 tl;
-uniform vec4 th;
+uniform float th;
 
 uniform vec4 param_knob0;
 uniform sampler2D addEventListener;
@@ -70,14 +69,14 @@ float fbm( vec2 p ) {
   );
 }
 
-vec2 mainAudio(vec4 time){
-  vec2 dest = vec2(0);
+vec2 mainAudio( float time ) {
+  vec2 dest = vec2( 0 );
 
-  float kickt = time.x;
-  if ( time.z > 15.0 * BEAT ) {
-    kickt = mod( kickt, 0.5 * BEAT );
+  float kickt = mod( time, 1.0 / bps );
+  if ( time > 15.0 / bps ) {
+    kickt = mod( kickt, 0.5 / bps );
   }
-  float sidechain = smoothstep( 0.3 * BEAT, 0.6 * BEAT, kickt );
+  float sidechain = smoothstep( 0.3 / bps, 0.6 / bps, kickt );
 
   // kick
   {
@@ -95,7 +94,7 @@ vec2 mainAudio(vec4 time){
 
   // hihat
   {
-    float t = mod( time.x - 0.5 * BEAT, BEAT );
+    float t = mod( time - 0.5 / bps, 1.0 / bps );
 
     float env = exp( -15.0 * t );
 
@@ -116,7 +115,7 @@ vec2 mainAudio(vec4 time){
 
   // scream
   {
-    float t = time.y;
+    float t = mod( time, 4.0 / bps );
 
     vec2 uv = 2.0 * orbit( 79.0 * t ) + 0.2 * orbit( 2000.0 * t ) + 10.0 * t;
 
@@ -130,7 +129,7 @@ vec2 mainAudio(vec4 time){
 }
 
 void main() {
-  vec2 out2 = mainAudio( mod( th + off * ds, tl ) );
+  vec2 out2 = mainAudio( th + off * ds );
   outL = out2.x;
   outR = out2.y;
 }

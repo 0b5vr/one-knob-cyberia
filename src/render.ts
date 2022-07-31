@@ -1,16 +1,10 @@
 import { FRAMES_PER_RENDER } from './Music';
 import { GL_ARRAY_BUFFER, GL_DYNAMIC_COPY, GL_FLOAT, GL_POINTS, GL_RASTERIZER_DISCARD, GL_STATIC_DRAW, GL_TEXTURE0, GL_TEXTURE_2D, GL_TRANSFORM_FEEDBACK, GL_TRANSFORM_FEEDBACK_BUFFER } from './gl-constants';
-import { canvasLain, inputKnob } from './ui';
+import { bps, canvasLain, inputKnob } from './ui';
 import { gainNode, sampleRate } from './audio';
 import { gl } from './canvas';
 import { program } from './program';
 import { randomTexture } from './randomTexture';
-
-const MUSIC_BPM = 190.0;
-
-const BEAT = 60.0 / MUSIC_BPM;
-const BAR = 240.0 / MUSIC_BPM;
-const FOUR_BAR = 960.0 / MUSIC_BPM;
 
 // == offset buffer ================================================================================
 const offsetBufferArray = new Float32Array( FRAMES_PER_RENDER ).map( ( _, i ) => i );
@@ -53,7 +47,7 @@ export const dstArray0 = new Float32Array( FRAMES_PER_RENDER );
 export const dstArray1 = new Float32Array( FRAMES_PER_RENDER );
 
 // == render =======================================================================================
-export function render( time: number ): void {
+export function render( fourBar: number ): void {
   // -- attrib -------------------------------------------------------------------------------------
   const attribLocation = gl.getAttribLocation( program, 'off' );
 
@@ -63,9 +57,9 @@ export function render( time: number ): void {
 
   // -- uniforms -----------------------------------------------------------------------------------
   const locationRandomTexture = gl.getUniformLocation( program, 'addEventListener' );
+  const locationBps = gl.getUniformLocation( program, 'bps' );
   const locationDeltaSample = gl.getUniformLocation( program, 'ds' );
   const locationKnob = gl.getUniformLocation( program, 'knob' );
-  const locationTimeLength = gl.getUniformLocation( program, 'tl' );
   const locationTimeHead = gl.getUniformLocation( program, 'th' );
 
   gl.activeTexture( GL_TEXTURE0 );
@@ -73,22 +67,10 @@ export function render( time: number ): void {
 
   gl.uniform1i( locationRandomTexture, 0 );
 
+  gl.uniform1f( locationBps, bps );
   gl.uniform1f( locationDeltaSample, 1.0 / sampleRate );
   gl.uniform1f( locationKnob, parseFloat( inputKnob.value ) );
-  gl.uniform4f(
-    locationTimeLength,
-    BEAT,
-    BAR,
-    FOUR_BAR,
-    1E16
-  );
-  gl.uniform4f(
-    locationTimeHead,
-    time % BEAT,
-    time % BAR,
-    time % FOUR_BAR,
-    time
-  );
+  gl.uniform1f( locationTimeHead, fourBar / bps );
 
   // -- render -------------------------------------------------------------------------------------
   gl.bindTransformFeedback( GL_TRANSFORM_FEEDBACK, tf );
@@ -123,10 +105,10 @@ export function render( time: number ): void {
   gl.bindBuffer( GL_ARRAY_BUFFER, null );
 
   // -- update lain --------------------------------------------------------------------------------
-  const flip = ~~( time / BEAT % 2.0 );
-  const layer = ~~( 2.0 * time / BEAT % 2.0 );
+  const flip = ~~( fourBar % 2.0 );
+  const layer = ~~( 2.0 * fourBar % 2.0 );
   canvasLain[ layer ].style.display = '';
   canvasLain[ layer ].style.transform = 'scale(' + gainNode.gain.value + ') scaleX(' + ( 1.0 - 2.0 * flip ) + ')';
-  canvasLain[ layer ].style.filter = 'hue-rotate(' + 400.0 * time + 'deg)';
+  canvasLain[ layer ].style.filter = 'hue-rotate(' + 360.0 * fourBar + 'deg)';
   canvasLain[ 1 - layer ].style.display = 'none';
 }
