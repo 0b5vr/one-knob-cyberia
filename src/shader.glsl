@@ -96,18 +96,18 @@ vec2 mainAudio( float time ) {
   {
     float t = mod( time - 0.5 / bps, 1.0 / bps );
 
-    float env = exp( -15.0 * t );
+    float env = exp( -10.0 * t );
 
-    vec2 uv = orbit( 800.0 * t ) + 137.0 * t;
+    vec2 uv = orbit( 800.0 * t ) + orbit( 4000.0 * t ) * exp( -100.0 * t ) + 137.0 * t;
 
-    dest += 0.2 * sidechain * env * vec2(
+    dest += 0.3 * sidechain * env * tanh( 5.0 * vec2(
       fbm( uv ),
-      fbm( uv + 0.5 )
-    );
+      fbm( uv - 0.5 )
+    ) );
 
     uv = orbit( 802.0 * t ) + 137.0 * t;
 
-    dest -= 0.2 * sidechain * env * tanh( 5.0 * vec2(
+    dest -= 0.3 * sidechain * env * tanh( 5.0 * vec2(
       fbm( uv ),
       fbm( uv - 0.5 )
     ) );
