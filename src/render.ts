@@ -109,6 +109,6 @@ export function render( fourBar: number ): void {
   const layer = ~~( 2.0 * fourBar % 2.0 );
   canvasLain[ layer ].style.display = '';
   canvasLain[ layer ].style.transform = 'scale(' + gainNode.gain.value + ') scaleX(' + ( 1.0 - 2.0 * flip ) + ')';
-  canvasLain[ layer ].style.filter = 'hue-rotate(' + 360.0 * fourBar + 'deg)';
+  canvasLain[ layer ].style.filter = 'hue-rotate(' + 180.0 * fourBar + 'deg)';
   canvasLain[ 1 - layer ].style.display = 'none';
 }
