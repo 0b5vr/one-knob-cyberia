@@ -22,10 +22,10 @@ export function updateMusic(): void {
 
   bufferReaderNode.setActive( isPlaying );
 
-  // -- early abort? -----------------------------------------------------------------------------
+  // -- early abort? -------------------------------------------------------------------------------
   if ( !isPlaying ) { return; }
 
-  // -- choose a right write block ---------------------------------------------------------------
+  // -- choose a right write block -----------------------------------------------------------------
   const blockAhead = bufferWriteBlocks - readBlocks;
 
   // we don't have to render this time
@@ -40,7 +40,7 @@ export function updateMusic(): void {
     ) * BLOCKS_PER_RENDER;
   }
 
-  // -- render -----------------------------------------------------------------------------------
+  // -- render -------------------------------------------------------------------------------------
   const time = BLOCK_SIZE * bufferWriteBlocks / sampleRate;
 
   render( time );
@@ -48,6 +48,6 @@ export function updateMusic(): void {
   bufferReaderNode.write( 0, bufferWriteBlocks, 0, dstArray0.subarray( 0, FRAMES_PER_RENDER ) );
   bufferReaderNode.write( 1, bufferWriteBlocks, 0, dstArray1.subarray( 0, FRAMES_PER_RENDER ) );
 
-  // -- update write blocks ----------------------------------------------------------------------
+  // -- update write blocks ------------------------------------------------------------------------
   bufferWriteBlocks += BLOCKS_PER_RENDER;
 }

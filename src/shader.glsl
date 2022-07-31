@@ -85,7 +85,7 @@ vec2 mainAudio(vec4 time){
     for ( int i = 0; i < 4; i ++ ) {
       p += exp( -7.0 + 5.0 * knob );
       float t = kickt * p * p;
-      float phase = 300.0 * t - 50.0 * exp( -40.0 * t );
+      float phase = 300.0 * t - 60.0 * exp( -40.0 * t );
 
       dest += 0.2 * clip( 60.0 * (
         sin( phase + 0.2 * sin( 3.0 * phase ) - 0.1 * sin( 13.1 * phase ) )

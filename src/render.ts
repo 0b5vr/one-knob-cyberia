@@ -1,10 +1,10 @@
 import { FRAMES_PER_RENDER } from './Music';
 import { GL_ARRAY_BUFFER, GL_DYNAMIC_COPY, GL_FLOAT, GL_POINTS, GL_RASTERIZER_DISCARD, GL_STATIC_DRAW, GL_TEXTURE0, GL_TEXTURE_2D, GL_TRANSFORM_FEEDBACK, GL_TRANSFORM_FEEDBACK_BUFFER } from './gl-constants';
+import { canvasLain, inputKnob } from './ui';
+import { gainNode, sampleRate } from './audio';
 import { gl } from './canvas';
-import { inputKnob } from './ui';
 import { program } from './program';
 import { randomTexture } from './randomTexture';
-import { sampleRate } from './audio';
 
 const MUSIC_BPM = 190.0;
 
@@ -54,14 +54,14 @@ export const dstArray1 = new Float32Array( FRAMES_PER_RENDER );
 
 // == render =======================================================================================
 export function render( time: number ): void {
-  // attrib
+  // -- attrib -------------------------------------------------------------------------------------
   const attribLocation = gl.getAttribLocation( program, 'off' );
 
   gl.bindBuffer( GL_ARRAY_BUFFER, offsetBuffer );
   gl.enableVertexAttribArray( attribLocation );
   gl.vertexAttribPointer( attribLocation, 1, GL_FLOAT, false, 0, 0 );
 
-  // uniforms
+  // -- uniforms -----------------------------------------------------------------------------------
   const locationRandomTexture = gl.getUniformLocation( program, 'addEventListener' );
   const locationDeltaSample = gl.getUniformLocation( program, 'ds' );
   const locationKnob = gl.getUniformLocation( program, 'knob' );
@@ -90,7 +90,7 @@ export function render( time: number ): void {
     time
   );
 
-  // render
+  // -- render -------------------------------------------------------------------------------------
   gl.bindTransformFeedback( GL_TRANSFORM_FEEDBACK, tf );
   gl.enable( GL_RASTERIZER_DISCARD );
 
@@ -121,4 +121,12 @@ export function render( time: number ): void {
     FRAMES_PER_RENDER,
   );
   gl.bindBuffer( GL_ARRAY_BUFFER, null );
+
+  // -- update lain --------------------------------------------------------------------------------
+  const flip = ~~( time / BEAT % 2.0 );
+  const layer = ~~( 2.0 * time / BEAT % 2.0 );
+  canvasLain[ layer ].style.display = '';
+  canvasLain[ layer ].style.transform = 'scale(' + gainNode.gain.value + ') scaleX(' + ( 1.0 - 2.0 * flip ) + ')';
+  canvasLain[ layer ].style.filter = 'hue-rotate(' + 400.0 * time + 'deg)';
+  canvasLain[ 1 - layer ].style.display = 'none';
 }
