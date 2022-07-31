@@ -63,7 +63,9 @@ float fbm( vec2 p ) {
   );
 }
 
-vec2 mainAudio( float time ) {
+void main() {
+  float time = ti + of * de;
+
   vec2 dest = vec2( 0 );
 
   float kickt = mod( time, 1.0 / a );
@@ -119,11 +121,8 @@ vec2 mainAudio( float time ) {
     ) );
   }
 
-  return tanh( 8.0 * dest );
-}
+  dest = tanh( 8.0 * dest );
 
-void main() {
-  vec2 out2 = mainAudio( ti + of * de );
-  ol = out2.x;
-  or = out2.y;
+  ol = dest.x;
+  or = dest.y;
 }
