@@ -26,7 +26,7 @@ function buildMinifierOptionsString( options: ShaderMinifierOptions ): string {
     str += '--hlsl ';
   }
 
-  str += '--format none ';
+  str += '--format text ';
 
   if ( options.fieldNames ) {
     str += `--field-names ${ options.fieldNames } `;
