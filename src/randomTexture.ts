@@ -21,3 +21,5 @@ gl.texImage2D(
 
 gl.texParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 gl.texParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+// gl.bindTexture( GL_TEXTURE_2D, null );

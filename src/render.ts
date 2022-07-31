@@ -1,5 +1,5 @@
 import { FRAMES_PER_RENDER } from './Music';
-import { GL_ARRAY_BUFFER, GL_DYNAMIC_COPY, GL_FLOAT, GL_POINTS, GL_RASTERIZER_DISCARD, GL_STATIC_DRAW, GL_TEXTURE0, GL_TEXTURE_2D, GL_TRANSFORM_FEEDBACK, GL_TRANSFORM_FEEDBACK_BUFFER } from './gl-constants';
+import { GL_ARRAY_BUFFER, GL_DYNAMIC_COPY, GL_FLOAT, GL_POINTS, GL_STATIC_DRAW, GL_TEXTURE0, GL_TEXTURE_2D, GL_TRANSFORM_FEEDBACK, GL_TRANSFORM_FEEDBACK_BUFFER } from './gl-constants';
 import { bps, canvasLain, inputKnob } from './ui';
 import { gainNode, sampleRate } from './audio';
 import { gl } from './canvas';
@@ -13,6 +13,7 @@ const offsetBuffer = gl.createBuffer()!;
 
 gl.bindBuffer( GL_ARRAY_BUFFER, offsetBuffer );
 gl.bufferData( GL_ARRAY_BUFFER, offsetBufferArray, GL_STATIC_DRAW );
+// gl.bindBuffer( GL_ARRAY_BUFFER, null );
 
 // == transform feedback buffer ====================================================================
 const tfBuffer0 = gl.createBuffer()!;
@@ -24,6 +25,7 @@ gl.bufferData(
   FRAMES_PER_RENDER * 4 /* Float32Array.BYTES_PER_ELEMENT */,
   GL_DYNAMIC_COPY,
 );
+// gl.bindBuffer( GL_ARRAY_BUFFER, null );
 
 gl.bindBuffer( GL_ARRAY_BUFFER, tfBuffer1 );
 gl.bufferData(
@@ -31,8 +33,7 @@ gl.bufferData(
   FRAMES_PER_RENDER * 4 /* Float32Array.BYTES_PER_ELEMENT */,
   GL_DYNAMIC_COPY,
 );
-
-gl.bindBuffer( GL_ARRAY_BUFFER, null );
+// gl.bindBuffer( GL_ARRAY_BUFFER, null );
 
 // == transform feedback ===========================================================================
 const tf = gl.createTransformFeedback()!;
@@ -40,7 +41,7 @@ const tf = gl.createTransformFeedback()!;
 gl.bindTransformFeedback( GL_TRANSFORM_FEEDBACK, tf );
 gl.bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 0, tfBuffer0 );
 gl.bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 1, tfBuffer1 );
-gl.bindTransformFeedback( GL_TRANSFORM_FEEDBACK, null );
+// gl.bindTransformFeedback( GL_TRANSFORM_FEEDBACK, null );
 
 // == dst array ====================================================================================
 export const dstArray0 = new Float32Array( FRAMES_PER_RENDER );
@@ -48,6 +49,8 @@ export const dstArray1 = new Float32Array( FRAMES_PER_RENDER );
 
 // == render =======================================================================================
 export function render( fourBar: number ): void {
+  // gl.useProgram( program );
+
   // -- attrib -------------------------------------------------------------------------------------
   const attribLocation = gl.getAttribLocation( program, 'off' );
 
@@ -74,13 +77,13 @@ export function render( fourBar: number ): void {
 
   // -- render -------------------------------------------------------------------------------------
   gl.bindTransformFeedback( GL_TRANSFORM_FEEDBACK, tf );
-  gl.enable( GL_RASTERIZER_DISCARD );
+  // gl.enable( GL_RASTERIZER_DISCARD );
 
   gl.beginTransformFeedback( GL_POINTS );
   gl.drawArrays( GL_POINTS, 0, FRAMES_PER_RENDER );
   gl.endTransformFeedback();
 
-  gl.disable( GL_RASTERIZER_DISCARD );
+  // gl.disable( GL_RASTERIZER_DISCARD );
   gl.bindTransformFeedback( GL_TRANSFORM_FEEDBACK, null );
 
   // feedback
@@ -92,7 +95,7 @@ export function render( fourBar: number ): void {
     0,
     FRAMES_PER_RENDER,
   );
-  gl.bindBuffer( GL_ARRAY_BUFFER, null );
+  // gl.bindBuffer( GL_ARRAY_BUFFER, null );
 
   gl.bindBuffer( GL_ARRAY_BUFFER, tfBuffer1 );
   gl.getBufferSubData(
@@ -102,7 +105,7 @@ export function render( fourBar: number ): void {
     0,
     FRAMES_PER_RENDER,
   );
-  gl.bindBuffer( GL_ARRAY_BUFFER, null );
+  // gl.bindBuffer( GL_ARRAY_BUFFER, null );
 
   // -- update lain --------------------------------------------------------------------------------
   const flip = ~~( fourBar % 2.0 );
