@@ -1,5 +1,6 @@
 import { FRAMES_PER_RENDER } from './Music';
 import { GL_ARRAY_BUFFER, GL_DYNAMIC_COPY, GL_FLOAT, GL_POINTS, GL_STATIC_DRAW, GL_TEXTURE0, GL_TEXTURE_2D, GL_TRANSFORM_FEEDBACK, GL_TRANSFORM_FEEDBACK_BUFFER } from './gl-constants';
+import { SHADER_IN_OFFSET, SHADER_UNIFORM_BPS, SHADER_UNIFORM_DELTA_SAMPLE, SHADER_UNIFORM_KNOB, SHADER_UNIFORM_TEXTURE_RANDOM, SHADER_UNIFORM_TIME_HEAD } from './shader-uniforms';
 import { bps, canvasLain, inputKnob } from './ui';
 import { gainNode, sampleRate } from './audio';
 import { gl } from './canvas';
@@ -52,23 +53,23 @@ export function render( fourBar: number ): void {
   // gl.useProgram( program );
 
   // -- attrib -------------------------------------------------------------------------------------
-  const attribLocation = gl.getAttribLocation( program, 'off' );
+  const attribLocation = gl.getAttribLocation( program, SHADER_IN_OFFSET );
 
   gl.bindBuffer( GL_ARRAY_BUFFER, offsetBuffer );
   gl.enableVertexAttribArray( attribLocation );
   gl.vertexAttribPointer( attribLocation, 1, GL_FLOAT, false, 0, 0 );
 
   // -- uniforms -----------------------------------------------------------------------------------
-  const locationRandomTexture = gl.getUniformLocation( program, 'addEventListener' );
-  const locationBps = gl.getUniformLocation( program, 'bps' );
-  const locationDeltaSample = gl.getUniformLocation( program, 'ds' );
-  const locationKnob = gl.getUniformLocation( program, 'knob' );
-  const locationTimeHead = gl.getUniformLocation( program, 'th' );
+  const locationTextureRandom = gl.getUniformLocation( program, SHADER_UNIFORM_TEXTURE_RANDOM );
+  const locationBps = gl.getUniformLocation( program, SHADER_UNIFORM_BPS );
+  const locationDeltaSample = gl.getUniformLocation( program, SHADER_UNIFORM_DELTA_SAMPLE );
+  const locationKnob = gl.getUniformLocation( program, SHADER_UNIFORM_KNOB );
+  const locationTimeHead = gl.getUniformLocation( program, SHADER_UNIFORM_TIME_HEAD );
 
   gl.activeTexture( GL_TEXTURE0 );
   gl.bindTexture( GL_TEXTURE_2D, randomTexture );
 
-  gl.uniform1i( locationRandomTexture, 0 );
+  gl.uniform1i( locationTextureRandom, 0 );
 
   gl.uniform1f( locationBps, bps );
   gl.uniform1f( locationDeltaSample, 1.0 / sampleRate );

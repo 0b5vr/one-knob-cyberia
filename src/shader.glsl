@@ -6,25 +6,19 @@ precision highp float;
 
 // #pragma shader_minifier_loader bypass
 
-#define PI 3.141592654
-#define TAU 6.283185307
+const float TAU = 2.0 * acos( -1.0 );
 
-#define saturate(i) clamp(i, 0.,1.)
-#define clip(i) clamp(i,-1.,1.)
-#define linearstep(a,b,x) saturate(((x)-(a))/((b)-(a)))
+uniform float a; // bps
+uniform float de; // delta sample
+uniform float kn; // knob
+uniform float ti; // time head
 
-uniform float bps;
-uniform float ds;
-uniform float knob;
-uniform float th;
+uniform sampler2D ra; // texture random
 
-uniform vec4 param_knob0;
-uniform sampler2D addEventListener;
+in float of;
 
-in float off;
-
-out float outL;
-out float outR;
+out float ol;
+out float or;
 
 vec2 smoother( vec2 t ) {
   return ( t * t * t * ( t * ( t * 6.0 - 15.0 ) + 10.0 ) );
@@ -35,7 +29,7 @@ vec2 orbit( float t ) {
 }
 
 vec2 getDir( ivec2 p ) {
-    return orbit( texelFetch( addEventListener, p & 255, 0 ).x );
+    return orbit( texelFetch( ra, p & 255, 0 ).x );
 }
 
 float perlin2d( vec2 p ) {
@@ -72,21 +66,21 @@ float fbm( vec2 p ) {
 vec2 mainAudio( float time ) {
   vec2 dest = vec2( 0 );
 
-  float kickt = mod( time, 1.0 / bps );
-  if ( time > 15.0 / bps ) {
-    kickt = mod( kickt, 0.5 / bps );
+  float kickt = mod( time, 1.0 / a );
+  if ( time > 15.0 / a ) {
+    kickt = mod( kickt, 0.5 / a );
   }
-  float sidechain = smoothstep( 0.3 / bps, 0.6 / bps, kickt );
+  float sidechain = smoothstep( 0.3 / a, 0.6 / a, kickt );
 
   // kick
   {
     float p = 1.0;
     for ( int i = 0; i < 4; i ++ ) {
-      p += exp( -7.0 + 5.0 * knob );
+      p += exp( -7.0 + 5.0 * kn );
       float t = kickt * p * p;
       float phase = 300.0 * t - 60.0 * exp( -40.0 * t );
 
-      dest += 0.2 * clip( 60.0 * (
+      dest += 0.2 * tanh( 60.0 * (
         sin( phase + 0.2 * sin( 3.0 * phase ) - 0.1 * sin( 13.1 * phase ) )
       ) );
     }
@@ -94,7 +88,7 @@ vec2 mainAudio( float time ) {
 
   // hihat
   {
-    float t = mod( time - 0.5 / bps, 1.0 / bps );
+    float t = mod( time - 0.5 / a, 1.0 / a );
 
     float env = exp( -10.0 * t );
 
@@ -115,7 +109,7 @@ vec2 mainAudio( float time ) {
 
   // scream
   {
-    float t = mod( time, 4.0 / bps );
+    float t = mod( time, 4.0 / a );
 
     vec2 uv = 2.0 * orbit( 79.0 * t ) + 0.2 * orbit( 2000.0 * t ) + 10.0 * t;
 
@@ -129,7 +123,7 @@ vec2 mainAudio( float time ) {
 }
 
 void main() {
-  vec2 out2 = mainAudio( th + off * ds );
-  outL = out2.x;
-  outR = out2.y;
+  vec2 out2 = mainAudio( ti + of * de );
+  ol = out2.x;
+  or = out2.y;
 }
