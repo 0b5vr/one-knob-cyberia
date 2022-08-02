@@ -1,7 +1,7 @@
 import { GL_COMPILE_STATUS, GL_FRAGMENT_SHADER, GL_LINK_STATUS, GL_SEPARATE_ATTRIBS, GL_VERTEX_SHADER } from './gl-constants';
 import { SHADER_OUT_L, SHADER_OUT_R } from './shader-uniforms';
 import { gl } from './canvas';
-import shader from './shader.glsl?shader';
+import shader from './assets/shader.glsl?shader';
 
 const frag = '#version 300 es\nvoid main(){discard;}';
 

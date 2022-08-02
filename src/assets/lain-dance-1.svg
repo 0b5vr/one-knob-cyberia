@@ -45,6 +45,6 @@
         <path d="M227.9,153.775L223.564,153.906L226.061,157.323L227.9,153.775Z" style="stroke:black;stroke-width:1px;"/>
         <path d="M218.391,41.088L217.045,46.638L213.598,46.385L214.186,40.583L218.391,41.088Z" style="stroke:black;stroke-width:1px;"/>
         <path d="M236.386,51.851L232.518,51.094L232.265,45.46L235.229,44.535L239.161,47.815L236.386,51.851Z" style="stroke:black;stroke-width:1px;"/>
-        <path d="M223.266,65.744L219.338,66.497" style="fill:none;stroke:black;stroke-width:1px;"/>
+        <path d="M223.266,65.744L219.338,66.497" style="stroke:black;stroke-width:1px;"/>
     </g>
 </svg>

@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { workletMinifierPlugin } from './vite-worklet-minifier-plugin';
+import { workletMinifierPlugin } from './plugins/vite-worklet-minifier-plugin';
 import { terserMinifyOptions } from './terserMinifyOptions';
 import Inspect from 'vite-plugin-inspect';
-import { shaderMinifierPlugin } from './vite-shader-minifier-plugin';
-import { htmlMinifierPlugin } from './vite-html-minifier-plugin';
+import { shaderMinifierPlugin } from './plugins/vite-shader-minifier-plugin';
+import { htmlMinifierPlugin } from './plugins/vite-html-minifier-plugin';
+import { lainDancePlugin } from './plugins/vite-lain-dance-plugin';
 
 export default defineConfig( ( { mode } ) => {
   return {
@@ -33,6 +34,7 @@ export default defineConfig( ( { mode } ) => {
     },
     plugins: [
       Inspect(),
+      lainDancePlugin(),
       htmlMinifierPlugin( {
         minify: true, // mode === 'prod',
       } ),

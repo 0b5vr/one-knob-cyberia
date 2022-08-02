@@ -1,4 +1,4 @@
-import uiHtml from './ui.html?html';
+import uiHtml from './assets/ui.html?html';
 
 document.body.innerHTML = uiHtml;
 
