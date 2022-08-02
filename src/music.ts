@@ -1,12 +1,8 @@
+import { BLOCKS_PER_RENDER, BLOCK_SIZE, BUFFER_FRAMES_PER_CHANNEL, FRAMES_PER_RENDER, LATENCY_BLOCKS } from './constants';
 import { bps } from './ui';
-import { bufferReaderNode } from './BufferReaderNode';
+import { bufferReaderNode, readBlocks } from './BufferReaderNode';
 import { dstArray0, dstArray1, render } from './render';
 import { sampleRate } from './audio';
-
-export const BLOCK_SIZE = 128;
-export const BLOCKS_PER_RENDER = 16;
-export const FRAMES_PER_RENDER = BLOCK_SIZE * BLOCKS_PER_RENDER;
-export const LATENCY_BLOCKS = 16;
 
 export let isPlaying = false;
 
@@ -20,9 +16,7 @@ let bufferWriteBlocks = 0;
 export function updateMusic(): void {
   if ( !bufferReaderNode ) { return; }
 
-  const readBlocks = bufferReaderNode.readBlocks;
-
-  bufferReaderNode.setActive( isPlaying );
+  bufferReaderNode.port.postMessage( isPlaying );
 
   // -- early abort? -------------------------------------------------------------------------------
   if ( !isPlaying ) { return; }
@@ -45,8 +39,17 @@ export function updateMusic(): void {
   // -- render -------------------------------------------------------------------------------------
   render( fourBar );
 
-  bufferReaderNode.write( 0, bufferWriteBlocks, 0, dstArray0.subarray( 0, FRAMES_PER_RENDER ) );
-  bufferReaderNode.write( 1, bufferWriteBlocks, 0, dstArray1.subarray( 0, FRAMES_PER_RENDER ) );
+  const offset = bufferWriteBlocks * BLOCK_SIZE % BUFFER_FRAMES_PER_CHANNEL;
+
+  bufferReaderNode.port.postMessage( [
+    dstArray0.subarray( 0, FRAMES_PER_RENDER ),
+    offset,
+  ] );
+
+  bufferReaderNode.port.postMessage( [
+    dstArray1.subarray( 0, FRAMES_PER_RENDER ),
+    offset + BUFFER_FRAMES_PER_CHANNEL,
+  ] );
 
   // -- update write blocks and position -----------------------------------------------------------
   fourBar = ( fourBar + BLOCKS_PER_RENDER * BLOCK_SIZE / sampleRate * bps ) % 16.0;

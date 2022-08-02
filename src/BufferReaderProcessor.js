@@ -2,43 +2,35 @@
 
 const BLOCK_SIZE = 128;
 const CHANNELS = 2;
-const BUFFER_SIZE_PER_CHANNEL = 65536;
+const BUFFER_FRAMES_PER_CHANNEL = 32768;
 
-class BufferReaderProcessor extends AudioWorkletProcessor {
+let active = 0; // false;
+let blocks = 0;
+const buffer = new Float32Array( CHANNELS * BUFFER_FRAMES_PER_CHANNEL );
+
+registerProcessor( 'a', class extends AudioWorkletProcessor {
   constructor() {
     super();
 
-    this.active = false;
-    this.blocks = 0;
-    this.buffer = new Float32Array( CHANNELS * BUFFER_SIZE_PER_CHANNEL );
-
     this.port.onmessage = ( { data } ) => {
       if ( Array.isArray( data ) ) {
-        this.buffer.set( ...data );
+        buffer.set( ...data );
       } else {
-        this.active = data;
+        active = data;
       }
     };
   }
 
   process( inputs, outputs, parameters ) {
-    if ( !this.active ) { return true; }
+    if ( active ) {
+      let offset = blocks * BLOCK_SIZE % BUFFER_FRAMES_PER_CHANNEL;
+      outputs[ 0 ][ 0 ].set( buffer.subarray( offset, offset + BLOCK_SIZE ) );
+      offset += BUFFER_FRAMES_PER_CHANNEL;
+      outputs[ 0 ][ 1 ].set( buffer.subarray( offset, offset + BLOCK_SIZE ) );
 
-    const buffer = this.buffer;
-
-    const head = ( BLOCK_SIZE * this.blocks ) % BUFFER_SIZE_PER_CHANNEL;
-
-    outputs[ 0 ].map( ( ch, iCh ) => {
-      const chHead = BUFFER_SIZE_PER_CHANNEL * iCh + head;
-      ch.set( buffer.subarray( chHead, chHead + BLOCK_SIZE ) );
-    } );
-
-    this.blocks ++;
-
-    this.port.postMessage( this.blocks );
+      this.port.postMessage( blocks ++ );
+    }
 
     return true;
   }
-}
-
-registerProcessor( 'buffer-reader-processor', BufferReaderProcessor );
+} );
