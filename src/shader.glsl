@@ -68,60 +68,74 @@ void main() {
 
   vec2 dest = vec2( 0 );
 
-  float kickt = mod( time, 1.0 / a );
+  float t = mod( time, 1.0 / a );
   if ( time > 15.0 / a ) {
-    kickt = mod( kickt, 0.5 / a );
+    t = mod( t, 0.5 / a );
   }
-  float sidechain = smoothstep( 0.3 / a, 0.6 / a, kickt );
+  float sidechain = smoothstep( 0.3 / a, 0.6 / a, t );
+
+  // subbass
+  float phase = 300.0 * t - 60.0 * exp( -40.0 * t );
+  float subbass = sin( phase );
 
   // kick
-  {
-    float p = 1.0;
-    for ( int i = 0; i < 4; i ++ ) {
-      p += exp( -7.0 + 5.0 * kn );
-      float t = kickt * p * p;
-      float phase = 300.0 * t - 60.0 * exp( -40.0 * t );
+  float p = 1.0 + exp( -mix( 6.0, 1.2, kn ) );
 
-      dest += 0.2 * tanh( 60.0 * (
-        sin( phase + 0.2 * sin( 3.0 * phase ) - 0.1 * sin( 13.1 * phase ) )
-      ) );
-    }
-  }
+  dest += tanh( 60.0 * subbass );
+
+  // unison x3
+  t *= p;
+  phase = 300.0 * t - 60.0 * exp( -40.0 * t );
+
+  dest += tanh( 60.0 * (
+    sin( phase + 0.2 * sin( 3.0 * phase ) - 0.1 * sin( 13.1 * phase ) )
+  ) );
+
+  t *= p;
+  phase = 300.0 * t - 60.0 * exp( -40.0 * t );
+
+  dest += tanh( 60.0 * (
+    sin( phase + 0.2 * sin( 3.0 * phase ) - 0.1 * sin( 13.1 * phase ) )
+  ) );
+
+  t *= p;
+  phase = 300.0 * t - 60.0 * exp( -40.0 * t );
+
+  dest += tanh( 60.0 * (
+    sin( phase + 0.2 * sin( 3.0 * phase ) - 0.1 * sin( 13.1 * phase ) )
+  ) );
 
   // hihat
-  {
-    float t = mod( time - 0.5 / a, 1.0 / a );
+  t = mod( t - 0.5 / a, 1.0 / a );
 
-    float env = exp( -10.0 * t );
+  float env = exp( -20.0 * t );
 
-    vec2 uv = orbit( 800.0 * t ) + orbit( 4000.0 * t ) * exp( -100.0 * t ) + 137.0 * t;
+  vec2 uv = orbit( 800.0 * t ) + orbit( 4000.0 * t ) * exp( -100.0 * t ) + 137.0 * t;
 
-    dest += 0.3 * sidechain * env * tanh( 5.0 * vec2(
-      fbm( uv ),
-      fbm( uv - 0.5 )
-    ) );
+  dest += 0.5 * sidechain * env * tanh( 5.0 * vec2(
+    fbm( uv ),
+    fbm( uv - 0.5 )
+  ) );
 
-    uv = orbit( 802.0 * t ) + 137.0 * t;
+  uv = orbit( 802.0 * t ) + orbit( 4000.0 * t ) * exp( -100.0 * t ) + 137.0 * t;
 
-    dest -= 0.3 * sidechain * env * tanh( 5.0 * vec2(
-      fbm( uv ),
-      fbm( uv - 0.5 )
-    ) );
-  }
+  dest -= 0.5 * sidechain * env * tanh( 5.0 * vec2(
+    fbm( uv ),
+    fbm( uv - 0.5 )
+  ) );
 
   // scream
-  {
-    float t = mod( time, 4.0 / a );
+  t = mod( time, 4.0 / a );
 
-    vec2 uv = 2.0 * orbit( 79.0 * t ) + 0.2 * orbit( 2000.0 * t ) + 10.0 * t;
+  uv = 2.0 * orbit( 79.0 * t ) + 0.2 * orbit( 2000.0 * t ) + 10.0 * t;
 
-    dest += 0.1 * sidechain * tanh( 20.0 * vec2(
-      fbm( uv ),
-      fbm( uv + 0.05 )
-    ) );
-  }
+  dest += 0.2 * sidechain * tanh( 20.0 * vec2(
+    fbm( uv ),
+    fbm( uv + 0.05 )
+  ) );
 
-  dest = tanh( 8.0 * dest );
+  // distort master
+  dest = mix( tanh( 4.0 * dest ), vec2( subbass ), 0.3 );
 
   ol = dest.x;
   or = dest.y;
