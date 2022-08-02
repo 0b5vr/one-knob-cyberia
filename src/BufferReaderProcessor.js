@@ -8,6 +8,7 @@ let active = 0; // false;
 let blocks = 0;
 const buffer = new Float32Array( CHANNELS * BUFFER_FRAMES_PER_CHANNEL );
 
+// https://youtu.be/7U6eHY1M9WM
 registerProcessor( 'a', class extends AudioWorkletProcessor {
   constructor() {
     super();

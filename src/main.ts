@@ -1,6 +1,6 @@
 import './lain';
 import { audio, gainNode } from './audio';
-import { buttonPlayPause, inputGain } from './ui';
+import { buttonPlayStop, inputGain } from './ui';
 import { isPlaying, togglePlay, updateMusic } from './music';
 
 const update = (): void => {
@@ -10,8 +10,8 @@ const update = (): void => {
 };
 update();
 
-buttonPlayPause.onclick = () => {
+buttonPlayStop.onclick = () => {
   audio.resume();
   togglePlay();
-  buttonPlayPause.innerText = isPlaying ? 'Stop' : 'Play';
+  buttonPlayStop.innerText = isPlaying ? 'Stop' : 'Play';
 };

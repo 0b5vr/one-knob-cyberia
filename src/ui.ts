@@ -7,7 +7,9 @@ export const [
   inputKnob,
   inputBPM,
 ] = document.querySelectorAll( 'input' );
-export const buttonPlayPause = document.querySelector( 'button' )!;
+export const [
+  buttonPlayStop,
+] = document.querySelectorAll( 'button' );
 export const canvasLain = document.querySelectorAll( 'canvas' );
 
 export let bps = 190.0 / 60.0;

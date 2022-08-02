@@ -110,9 +110,9 @@ export function render( fourBar: number ): void {
 
   // -- update lain --------------------------------------------------------------------------------
   const flip = ~~( fourBar % 2.0 );
-  const layer = ~~( 2.0 * fourBar % 2.0 );
-  canvasLain[ layer ].style.display = '';
-  canvasLain[ layer ].style.transform = 'scale(' + gainNode.gain.value + ') scaleX(' + ( 1.0 - 2.0 * flip ) + ')';
-  canvasLain[ layer ].style.filter = 'hue-rotate(' + 180.0 * fourBar + 'deg)';
-  canvasLain[ 1 - layer ].style.display = 'none';
+  canvasLain.forEach( ( canvas ) => canvas.style.display = 'none' );
+  const targetCanvasStyle = canvasLain[ ~~( 4.0 * fourBar % 4.0 ) ].style;
+  targetCanvasStyle.display = '';
+  targetCanvasStyle.transform = 'scale(' + gainNode.gain.value + ') scaleX(' + ( 1.0 - 2.0 * flip ) + ')';
+  targetCanvasStyle.filter = 'hue-rotate(' + 180.0 * fourBar + 'deg)';
 }

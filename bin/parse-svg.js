@@ -17,7 +17,7 @@ const { traverse } = require( '@0b5vr/experimental' );
   // assuming aspect ratio is > 1
   const xshift = ( width - height ) / 2.0;
 
-  const entries = [];
+  let entries = [];
 
   traverse( result, ( node ) => {
     if ( node.tagName === 'path' ) {
@@ -25,16 +25,23 @@ const { traverse } = require( '@0b5vr/experimental' );
       d = d.replace( 'M', '' );
       d = d.replace( 'Z', '' );
 
+      let px = 0;
+      let py = 0;
+
       const vertices = d
         .split( 'L' )
         .map( ( s ) => s.split( ',' ) )
         .map( ( v ) => {
-          const x = parseFloat( v[ 0 ] ) - xshift;
-          const y = parseFloat( v[ 1 ] );
-          return [
-            Math.round( x / height * 256.0 ),
-            Math.round( y / height * 256.0 ),
-          ];
+          const x = Math.round( ( parseFloat( v[ 0 ] ) - xshift ) / height * 256.0 );
+          const y = Math.round( parseFloat( v[ 1 ] ) / height * 256.0 );
+
+          const dx = ( x - px + 256 ) % 256;
+          const dy = ( y - py + 256 ) % 256;
+
+          px = x;
+          py = y;
+
+          return [ dx, dy ];
         } )
         .flat();
 
@@ -57,11 +64,29 @@ const { traverse } = require( '@0b5vr/experimental' );
       entries.push( [
         fill.map( ( v ) => Math.floor( v / 16.0 ).toString( 16 ) ).join( '' ),
         vertices.map( ( v ) => ( '0' + v.toString( 16 ) ).slice( -2 ) ).join( '' ),
-      ].join( ',' ) );
+      ] );
     }
 
     return node.children;
   } );
 
+  // join consecutive path which color is same
+  let lastColor = '';
+  entries = entries.reduce( ( e, v ) => {
+    if ( lastColor === v[ 0 ] ) {
+      e[ e.length - 1 ].push( v[ 1 ] );
+    } else {
+      lastColor = v[ 0 ];
+      e.push( v );
+    }
+
+    return e;
+  }, [] );
+
+  // join with `,`
+  // it will look like color,path1,path2,...
+  entries = entries.map( ( v ) => v.join( ',' ) );
+
+  // join each paths with `;`
   console.log( entries.join( ';' ) );
 } )();
