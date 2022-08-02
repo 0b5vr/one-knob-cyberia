@@ -45,10 +45,8 @@ import { canvasLain } from './ui';
         while ( a.length ) {
           x += parseInt( a.shift()! + a.shift()!, 16 );
           y += parseInt( a.shift()! + a.shift()!, 16 );
-          x %= 256;
-          y %= 256;
 
-          context.lineTo( x, y );
+          context.lineTo( x % 256, y % 256 );
         }
 
         context.fill();
