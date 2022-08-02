@@ -93,8 +93,6 @@ export function render( fourBar: number ): void {
     GL_ARRAY_BUFFER,
     0,
     dstArray0,
-    0,
-    FRAMES_PER_RENDER,
   );
   // gl.bindBuffer( GL_ARRAY_BUFFER, null );
 
@@ -103,8 +101,6 @@ export function render( fourBar: number ): void {
     GL_ARRAY_BUFFER,
     0,
     dstArray1,
-    0,
-    FRAMES_PER_RENDER,
   );
   // gl.bindBuffer( GL_ARRAY_BUFFER, null );
 
