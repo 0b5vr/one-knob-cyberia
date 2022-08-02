@@ -4,7 +4,7 @@ import { buttonPlayStop, inputGain } from './ui';
 import { isPlaying, togglePlay, updateMusic } from './music';
 
 const update = (): void => {
-  gainNode.gain.value = parseFloat( inputGain.value );
+  gainNode.gain.value = +inputGain.value;
   updateMusic();
   requestAnimationFrame( update );
 };

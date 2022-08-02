@@ -73,7 +73,7 @@ export function render( fourBar: number ): void {
 
   gl.uniform1f( locationBps, bps );
   gl.uniform1f( locationDeltaSample, 1.0 / sampleRate );
-  gl.uniform1f( locationKnob, parseFloat( inputKnob.value ) );
+  gl.uniform1f( locationKnob, +inputKnob.value );
   gl.uniform1f( locationTimeHead, fourBar / bps );
 
   // -- render -------------------------------------------------------------------------------------
