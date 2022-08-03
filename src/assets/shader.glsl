@@ -81,27 +81,27 @@ void main() {
   // kick
   float p = 1.0 + exp( -mix( 6.0, 1.2, kn ) );
 
-  dest += tanh( 60.0 * subbass );
+  dest += tanh( 30.0 * subbass );
 
   // unison x3
   t *= p;
   phase = 300.0 * t - 60.0 * exp( -40.0 * t );
 
-  dest += tanh( 60.0 * (
+  dest += tanh( 30.0 * (
     sin( phase + 0.2 * sin( 3.0 * phase ) - 0.1 * sin( 13.1 * phase ) )
   ) );
 
   t *= p;
   phase = 300.0 * t - 60.0 * exp( -40.0 * t );
 
-  dest += tanh( 60.0 * (
+  dest += tanh( 30.0 * (
     sin( phase + 0.2 * sin( 3.0 * phase ) - 0.1 * sin( 13.1 * phase ) )
   ) );
 
   t *= p;
   phase = 300.0 * t - 60.0 * exp( -40.0 * t );
 
-  dest += tanh( 60.0 * (
+  dest += tanh( 30.0 * (
     sin( phase + 0.2 * sin( 3.0 * phase ) - 0.1 * sin( 13.1 * phase ) )
   ) );
 
