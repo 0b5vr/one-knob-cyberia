@@ -17,7 +17,7 @@ export function updateMusic(): void {
   if ( bufferReaderNode ) {
     bufferReaderNode.port.postMessage( isPlaying );
 
-    // if ( !isPlaying ) { return; }
+    if ( !isPlaying ) { return; }
 
     // -- choose a right write block ---------------------------------------------------------------
     const blockAhead = bufferWriteBlocks - readBlocks;
