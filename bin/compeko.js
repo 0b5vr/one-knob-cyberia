@@ -25,16 +25,13 @@ if ( process.argv[ 3 ] == null ) {
 // -- modules --------------------------------------------------------------------------------------
 const fs = require( 'fs' );
 const { resolve } = require( 'path' );
-const glob = require( 'glob-promise' );
 const zopfli = require( 'node-zopfli' );
 
 // -- main -----------------------------------------------------------------------------------------
 console.info( 'Compressing the file...' );
 
 ( async () => {
-  const inputMatches = await glob( process.argv[ 2 ] );
-  const inputPath = inputMatches[ 0 ];
-
+  const inputPath = resolve( process.cwd(), process.argv[ 2 ] );
   const outputPath = resolve( process.cwd(), process.argv[ 3 ] );
 
   const inputFile = await fs.promises.readFile( inputPath );
