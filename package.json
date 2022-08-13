@@ -7,6 +7,7 @@
     "build": "yarn build-js && yarn build-comp",
     "build-js": "vite build --mode prod",
     "build-comp": "node bin/compeko.js dist/assets/index.*.js dist/compeko.html",
+    "build-jsexe": "jsexe -cn -po dist/assets/index.*.js dist/jsexe.html",
     "lint": "eslint \"src/**/*.ts\"",
     "lint-fix": "eslint \"src/**/*.ts\" --fix",
     "typecheck": "tsc",
