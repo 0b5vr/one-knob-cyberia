@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 // compeko - pack JavaScript into a self-extracting html+deflate
+// v1.1.0
 
 // Copyright (c) 2022 0b5vr
 // SPDX-License-Identifier: MIT
@@ -8,15 +9,26 @@
 // Usage:
 // - prepare a js code, which will be fed into `eval`
 // - install `node-zopfli` as your (dev-) dependency
-// - run: node compeko.js input.js output.html
+// - run: `node compeko.js input.js output.html`
 
 // Shoutouts to:
 // - gasman, for pnginator ... https://gist.github.com/gasman/2560551
 // - Charles Boccato, for JsExe ... https://www.pouet.net/prod.php?which=59298
+// - subzey, for fetchcrunch ... https://github.com/subzey/fetchcrunch
+//   - Achieves almost the same concept. Referred several tricks of the header code
 
 // =================================================================================================
 
 // -- sanity check ---------------------------------------------------------------------------------
+try {
+  require( 'node-zopfli' );
+} catch ( e ) {
+  console.error( e );
+  console.error( `
+\x1b[31mMake sure you installed \x1b[35mnode-zopfli\x1b[31m !\x1b[0m` );
+  process.exit( 1 );
+}
+
 if ( process.argv[ 3 ] == null ) {
   console.error( '\x1b[31mUsage: \x1b[35mnode compeko.js input.js output.html\x1b[0m' );
   process.exit( 1 );
@@ -38,7 +50,7 @@ console.info( 'Compressing the file...' );
   const inputSize = inputFile.length;
   console.info( `Input size: \x1b[32m${ inputSize.toLocaleString() } bytes\x1b[0m` );
 
-  const compressed = await zopfli.zlib( inputFile, {
+  const compressed = await zopfli.deflate( inputFile, {
     numiterations: 100, // increase this number to shave your last bytes
     blocksplitting: true,
   } );
@@ -50,7 +62,7 @@ console.info( 'Compressing the file...' );
     await fs.promises.writeFile( deflatePath, compressed );
   }
 
-  const header = '<script>fetch("#").then(t=>t.blob()).then(t=>new Response(t.slice(156).stream().pipeThrough(new DecompressionStream("deflate"))).text()).then(eval)</script>';
+  const header = '<svg onload="fetch`#`.then(t=>t.blob()).then(t=>new Response(t.slice(154).stream().pipeThrough(new DecompressionStream`deflate-raw`)).text()).then(eval)">';
   const headerBuffer = Buffer.alloc( header.length );
   headerBuffer.write( header );
 
