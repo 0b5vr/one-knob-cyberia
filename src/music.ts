@@ -8,17 +8,14 @@ export let isPlaying = false;
 
 export function togglePlay(): void {
   isPlaying = !isPlaying;
+  bufferReaderNode!.port.postMessage( isPlaying );
 }
 
 let fourBar = 0;
 let bufferWriteBlocks = 0;
 
 export function updateMusic(): void {
-  if ( bufferReaderNode ) {
-    bufferReaderNode.port.postMessage( isPlaying );
-
-    if ( !isPlaying ) { return; }
-
+  if ( isPlaying && bufferReaderNode ) {
     // -- choose a right write block ---------------------------------------------------------------
     const blockAhead = bufferWriteBlocks - readBlocks;
 
