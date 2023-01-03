@@ -15,7 +15,7 @@ let fourBar = 0;
 let bufferWriteBlocks = 0;
 
 export function updateMusic(): void {
-  if ( isPlaying && bufferReaderNode ) {
+  if ( bufferReaderNode ) {
     // -- choose a right write block ---------------------------------------------------------------
     const blockAhead = bufferWriteBlocks - readBlocks;
 
